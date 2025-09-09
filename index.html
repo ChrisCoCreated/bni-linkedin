@@ -14,11 +14,14 @@
     button, input[type="text"] { font: inherit; padding: 10px 12px; }
     button { cursor: pointer; }
     #shareUrl { flex: 1 1 360px; min-width: 240px; }
+
       ul { padding-left: 20px; }
       li { margin: 6px 0; }
       #openAll { margin-top: 12px; }
       .footer { margin-top: 24px; color: #666; font-size: 12px; }
-    </style>
+    .footer img { height: 40px; margin-top: 8px; }
+  </style>
+
 </head>
 <body>
   <h1>LinkedIn Search Link Builder</h1>
@@ -35,10 +38,15 @@ Jonathan Fairly Marvellous Websites"></textarea>
 
     <ul id="results" aria-live="polite"></ul>
 
-    <button id="openAll">Open all in tabs</button>
+      <button id="openAll">Open all in tabs</button>
 
-    <div class="footer">
-    Uses LinkedIn’s public search: <code>/search/results/all?keywords=&lt;query&gt;</code>.
+  <div class="footer">
+    Uses LinkedIn’s public search: <code>/search/results/all?keywords=&lt;query&gt;</code>.<br />
+    Built with referrals in mind by Chris Gage from <a href="https://thrivehomecare.co.uk" target="_blank" rel="noopener">Thrive Homecare</a>,
+    part of <a href="https://planwithcare.co.uk" target="_blank" rel="noopener">Plan with Care</a>.<br />
+    <a href="https://thrivehomecare.co.uk" target="_blank" rel="noopener">
+      <img src="https://static.wixstatic.com/media/3cbab2_a584714b048842648b34615dd1dc792a~mv2.png/v1/fill/w_478,h_240,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/thrive-logo-CutOut.png" alt="Thrive Homecare logo" />
+    </a>
   </div>
 
 <script>
