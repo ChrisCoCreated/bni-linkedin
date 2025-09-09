@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LinkedIn Search Link Builder</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; padding: 24px; }
+    h1 { margin: 0 0 8px }
+    p.hint { margin: 0 0 16px; color: #555 }
+    textarea { width: 100%; min-height: 160px; padding: 12px; box-sizing: border-box; font: inherit; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 20px; }
+    button, input[type="text"] { font: inherit; padding: 10px 12px; }
+    button { cursor: pointer; }
+    #shareUrl { flex: 1 1 360px; min-width: 240px; }
+    ul { padding-left: 20px; }
+    li { margin: 6px 0; }
+    .footer { margin-top: 24px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>LinkedIn Search Link Builder</h1>
+  <p class="hint">Enter one person per line (e.g. <em>Jonathan Fairly Marvellous Websites</em> or <em>John Smith, Acme Ltd</em>).</p>
+
+  <textarea id="people" placeholder="Jane Doe, Example Ltd
+John Smith Marketing
+Jonathan Fairly Marvellous Websites"></textarea>
+
+  <div class="row">
+    <button id="generate">Generate links</button>
+    <button id="copyShare">Copy shareable link</button>
+    <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
+  </div>
+
+  <ul id="results" aria-live="polite"></ul>
+
+  <div class="footer">
+    Uses LinkedIn’s public search: <code>/search/results/all?keywords=&lt;query&gt;</code>.
+  </div>
+
+<script>
+(function () {
+  const $ = (sel) => document.querySelector(sel);
+  const peopleEl = $('#people');
+  const resultsEl = $('#results');
+  const shareEl = $('#shareUrl');
+
+  function liUrl(q) {
+    const url = 'https://www.linkedin.com/search/results/all?keywords=' + encodeURIComponent(q.trim().replace(/\s+/g, ' ').replace(/\s*,\s*/g, ' '));
+    return { label: q.trim(), url };
+  }
+
+  function render(list) {
+    resultsEl.innerHTML = '';
+    list.filter(Boolean).forEach(q => {
+      const { label, url } = liUrl(q);
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = label;
+      li.appendChild(a);
+      resultsEl.appendChild(li);
+    });
+  }
+
+  function getLines() {
+    return peopleEl.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  }
+
+  function setShareUrl() {
+    const raw = peopleEl.value.trim();
+    const url = new URL(window.location.href);
+    if (raw) {
+      url.searchParams.set('list', raw.replace(/\r?\n/g, '\n'));
+    } else {
+      url.searchParams.delete('list');
+    }
+    shareEl.value = url.toString();
+    window.history.replaceState(null, '', url);
+  }
+
+  function loadFromUrl() {
+    const url = new URL(window.location.href);
+    const listParam = url.searchParams.get('list');
+    if (listParam) {
+      peopleEl.value = listParam;
+      render(getLines());
+      setShareUrl();
+    }
+  }
+
+  $('#generate').addEventListener('click', () => {
+    render(getLines());
+    setShareUrl();
+  });
+
+  $('#copyShare').addEventListener('click', async () => {
+    setShareUrl();
+    try {
+      await navigator.clipboard.writeText(shareEl.value);
+    } catch (_) {
+      shareEl.select();
+      document.execCommand('copy');
+    }
+  });
+
+  let t;
+  peopleEl.addEventListener('input', () => {
+    clearTimeout(t);
+    t = setTimeout(setShareUrl, 250);
+  });
+
+  loadFromUrl();
+})();
+</script>
+</body>
+</html>
