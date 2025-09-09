@@ -29,6 +29,7 @@ Jonathan Fairly Marvellous Websites"></textarea>
 
   <div class="row">
     <button id="generate">Generate links</button>
+    <button id="openAll">Open all in tabs</button>
     <button id="copyShare">Copy shareable link</button>
     <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
   </div>
@@ -95,6 +96,16 @@ Jonathan Fairly Marvellous Websites"></textarea>
   $('#generate').addEventListener('click', () => {
     render(getLines());
     setShareUrl();
+  });
+
+  $('#openAll').addEventListener('click', () => {
+    const list = getLines();
+    list.forEach(q => {
+      if (q.trim()) {
+        const { url } = liUrl(q);
+        window.open(url, '_blank');
+      }
+    });
   });
 
   $('#copyShare').addEventListener('click', async () => {
