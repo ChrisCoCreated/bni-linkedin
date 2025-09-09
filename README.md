@@ -4,7 +4,8 @@ This is a static web app that lets you paste a list of names (optionally with co
 
 ## How to use
 - Enter one person per line in the textarea.
-- Click **Generate links** to see LinkedIn search results for each entry.
+- Links are generated automatically as you type.
+- Use **Open all in tabs** to launch every search in a new tab.
 - Use **Copy shareable link** to generate a URL with your list embedded.
 
 ## Deployment on Vercel
