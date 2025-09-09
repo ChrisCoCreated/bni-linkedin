@@ -14,10 +14,11 @@
     button, input[type="text"] { font: inherit; padding: 10px 12px; }
     button { cursor: pointer; }
     #shareUrl { flex: 1 1 360px; min-width: 240px; }
-    ul { padding-left: 20px; }
-    li { margin: 6px 0; }
-    .footer { margin-top: 24px; color: #666; font-size: 12px; }
-  </style>
+      ul { padding-left: 20px; }
+      li { margin: 6px 0; }
+      #openAll { margin-top: 12px; }
+      .footer { margin-top: 24px; color: #666; font-size: 12px; }
+    </style>
 </head>
 <body>
   <h1>LinkedIn Search Link Builder</h1>
@@ -27,16 +28,16 @@
 John Smith Marketing
 Jonathan Fairly Marvellous Websites"></textarea>
 
-  <div class="row">
-    <button id="generate">Generate links</button>
+    <div class="row">
+      <button id="copyShare">Copy shareable link</button>
+      <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
+    </div>
+
+    <ul id="results" aria-live="polite"></ul>
+
     <button id="openAll">Open all in tabs</button>
-    <button id="copyShare">Copy shareable link</button>
-    <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
-  </div>
 
-  <ul id="results" aria-live="polite"></ul>
-
-  <div class="footer">
+    <div class="footer">
     Uses LinkedIn’s public search: <code>/search/results/all?keywords=&lt;query&gt;</code>.
   </div>
 
@@ -93,16 +94,11 @@ Jonathan Fairly Marvellous Websites"></textarea>
     }
   }
 
-  $('#generate').addEventListener('click', () => {
-    render(getLines());
-    setShareUrl();
-  });
-
-  $('#openAll').addEventListener('click', () => {
-    const list = getLines();
-    list.forEach(q => {
-      if (q.trim()) {
-        const { url } = liUrl(q);
+    $('#openAll').addEventListener('click', () => {
+      const list = getLines();
+      list.forEach(q => {
+        if (q.trim()) {
+          const { url } = liUrl(q);
         window.open(url, '_blank');
       }
     });
@@ -118,11 +114,14 @@ Jonathan Fairly Marvellous Websites"></textarea>
     }
   });
 
-  let t;
-  peopleEl.addEventListener('input', () => {
-    clearTimeout(t);
-    t = setTimeout(setShareUrl, 250);
-  });
+    let t;
+    peopleEl.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        render(getLines());
+        setShareUrl();
+      }, 250);
+    });
 
   loadFromUrl();
 })();
