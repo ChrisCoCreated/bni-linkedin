@@ -18,6 +18,7 @@
     #shareUrl { flex: 1 1 360px; min-width: 240px; border: 1px solid #ddd; border-radius: 8px; }
     img.icon { width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; }
     #openAllRow { display: none; }
+    .table-wrapper { width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #ddd; }
     tfoot td { border-bottom: none; padding-top: 12px; }
@@ -91,6 +92,13 @@
 
     .footer { margin-top: 24px; color: #666; font-size: 12px; }
 
+    @media (max-width: 480px) {
+      body { padding: 16px; }
+      .row { flex-direction: column; align-items: stretch; }
+      .row > * { width: 100%; }
+      #shareUrl { flex: 1 1 auto; min-width: 0; }
+    }
+
     @media (max-width: 540px) {
       .marketing-item { grid-template-columns: 96px 1fr; }
       .marketing-item img.main { width: 96px; height: 96px; }
@@ -113,17 +121,19 @@
 Bob: Jane Doe, Example Ltd
 John Smith Marketing"></textarea>
 
-  <table id="results" aria-live="polite">
-    <thead>
-      <tr>
-        <th>Requester</th>
-        <th>LinkedIn</th>
-        <th>Facebook</th>
-        <th>Google</th>
-      </tr>
-    </thead>
-    <tbody id="resultsBody"></tbody>
-  </table>
+  <div class="table-wrapper">
+    <table id="results" aria-live="polite">
+      <thead>
+        <tr>
+          <th>Requester</th>
+          <th>LinkedIn</th>
+          <th>Facebook</th>
+          <th>Google</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+  </div>
 
   <div id="openAllRow" class="row">
     <button id="openAllLinkedIn"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" />Open all in LinkedIn</button>
