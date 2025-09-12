@@ -7,7 +7,7 @@
   <style>
     :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
     body { margin: 0; padding: 24px; }
-  h1 { margin: 0 0 8px }
+    h1 { margin: 0 0 8px }
     p.hint { margin: 0 0 16px; color: #555 }
     textarea { width: 100%; min-height: 160px; padding: 12px; box-sizing: border-box; font: inherit; }
     .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 20px; }
@@ -17,16 +17,44 @@
     li img.icon { width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; }
     #openAll { display: none; margin-top: 12px; }
 
-      ul { padding-left: 20px; }
-      li { margin: 6px 0; }
-      .marketing { margin: 32px 0; display: flex; flex-wrap: wrap; gap: 24px; }
-      .marketing-item { flex: 1 1 340px; display: flex; align-items: flex-start; gap: 16px; background: #f9f9f9; padding: 16px; border-radius: 8px; position: relative; }
-      .marketing-item img.main { width: 120px; height: 120px; object-fit: cover; border-radius: 4px; }
-      .marketing-item h2 { margin: 0 0 8px; }
-      .marketing-item .content { position: relative; padding-top: 40px; }
-      .marketing-item .company-logo { position: absolute; top: 0; right: 0; }
-      .marketing-item .company-logo img { height: 40px; }
-      .footer { margin-top: 24px; color: #666; font-size: 12px; }
+    ul { padding-left: 20px; }
+    li { margin: 6px 0; }
+
+    .marketing { margin: 32px 0; display: flex; flex-wrap: wrap; gap: 24px; }
+    .marketing-item {
+      flex: 1 1 340px;
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      background: #f9f9f9;
+      padding: 16px;
+      border-radius: 8px;
+      position: relative;
+    }
+    .marketing-item img.main {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex: 0 0 auto;
+    }
+    .marketing-item .content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      padding-right: 132px; /* space for logo */
+      flex: 1 1 auto;
+    }
+    .marketing-item h2 { margin: 0; }
+    .marketing-item p { margin: 0; }
+    .marketing-item .company-logo {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+    .marketing-item .company-logo img { height: 40px; }
+    .footer { margin-top: 24px; color: #666; font-size: 12px; }
   </style>
 
 </head>
@@ -38,15 +66,15 @@
 Jane Doe, Example Ltd
 John Smith Marketing"></textarea>
 
-    <ul id="results" aria-live="polite"></ul>
+  <ul id="results" aria-live="polite"></ul>
 
-      <button id="openAll">Open all in LinkedIn</button>
+  <button id="openAll">Open all in LinkedIn</button>
 
-    <div class="row">
-      <button id="copyShare">Copy shareable link</button>
-      <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
-    </div>
-    <p class="hint">Copy the link and share with the rest of the chapter to save you all time and increase referrals.</p>
+  <div class="row">
+    <button id="copyShare">Copy shareable link</button>
+    <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
+  </div>
+  <p class="hint">Copy the link and share with the rest of the chapter to save you all time and increase referrals.</p>
 
   <section class="marketing">
     <div class="marketing-item">
@@ -57,9 +85,8 @@ John Smith Marketing"></textarea>
         <a href="https://thrivehomecare.co.uk" target="_blank" rel="noopener" class="company-logo">
           <img src="https://static.wixstatic.com/media/3cbab2_a584714b048842648b34615dd1dc792a~mv2.png/v1/fill/w_478,h_240,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/thrive-logo-CutOut.png" alt="Thrive Homecare logo" />
         </a>
-
-        <h2>Thrive Homecare</h2>
         <p>Helping your parents thrive in the south east of England, and giving you peace of mind.</p>
+        <h2>Thrive Homecare</h2>
       </div>
     </div>
     <div class="marketing-item">
@@ -70,8 +97,8 @@ John Smith Marketing"></textarea>
         <a href="https://www.planwithcare.co.uk/" target="_blank" rel="noopener" class="company-logo">
           <img src="https://static.wixstatic.com/media/bb55db_45b2cd200703427f91b1721083529c35~mv2.png/v1/fill/w_208,h_158,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Planwithcare%20logo%20ACTUAL.png" alt="Plan with Care logo" />
         </a>
+        <p>Health and Welfare expertise and management, for solicitors, reducing non-billable time and stress, at no cost to you or your clients.</p>
         <h2>Plan with Care</h2>
-        <p>Health and Welfare expertise and management, for solicitors, reducing non-billable time, and stress, at no cost to you or your clients.</p>
       </div>
     </div>
   </section>
@@ -81,86 +108,86 @@ John Smith Marketing"></textarea>
     part of <a href="https://www.planwithcare.co.uk/" target="_blank" rel="noopener">Plan with Care</a>.<br />
   </div>
 
-<script>
-(function () {
-  const $ = (sel) => document.querySelector(sel);
-  const peopleEl = $('#people');
-  const resultsEl = $('#results');
-  const shareEl = $('#shareUrl');
-  const openAllEl = $('#openAll');
+  <script>
+  (function () {
+    const $ = (sel) => document.querySelector(sel);
+    const peopleEl = $('#people');
+    const resultsEl = $('#results');
+    const shareEl = $('#shareUrl');
+    const openAllEl = $('#openAll');
 
-  function liUrl(q) {
-    const url = 'https://www.linkedin.com/search/results/all?keywords=' + encodeURIComponent(q.trim().replace(/\s+/g, ' ').replace(/\s*,\s*/g, ' '));
-    return { label: q.trim(), url };
-  }
+    function liUrl(q) {
+      const url = 'https://www.linkedin.com/search/results/all?keywords=' + encodeURIComponent(q.trim().replace(/\s+/g, ' ').replace(/\s*,\s*/g, ' '));
+      return { label: q.trim(), url };
+    }
 
-  function render(list) {
-    resultsEl.innerHTML = '';
-    const filtered = list.filter(Boolean);
-    filtered.forEach(q => {
-      const { label, url } = liUrl(q);
-      const li = document.createElement('li');
-      const icon = document.createElement('img');
-      icon.src = 'https://cdn-icons-png.flaticon.com/512/174/174857.png';
-      icon.alt = 'LinkedIn';
-      icon.className = 'icon';
-      const a = document.createElement('a');
-      a.href = url;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.textContent = label;
-      li.appendChild(icon);
-      li.appendChild(a);
-      resultsEl.appendChild(li);
+    function render(list) {
+      resultsEl.innerHTML = '';
+      const filtered = list.filter(Boolean);
+      filtered.forEach(q => {
+        const { label, url } = liUrl(q);
+        const li = document.createElement('li');
+        const icon = document.createElement('img');
+        icon.src = 'https://cdn-icons-png.flaticon.com/512/174/174857.png';
+        icon.alt = 'LinkedIn';
+        icon.className = 'icon';
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = label;
+        li.appendChild(icon);
+        li.appendChild(a);
+        resultsEl.appendChild(li);
+      });
+      openAllEl.style.display = filtered.length >= 2 ? 'block' : 'none';
+    }
+
+    function getLines() {
+      return peopleEl.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    }
+
+    function setShareUrl() {
+      const raw = peopleEl.value.trim();
+      const url = new URL(window.location.href);
+      if (raw) {
+        url.searchParams.set('list', raw.replace(/\r?\n/g, '\n'));
+      } else {
+        url.searchParams.delete('list');
+      }
+      shareEl.value = url.toString();
+      window.history.replaceState(null, '', url);
+    }
+
+    function loadFromUrl() {
+      const url = new URL(window.location.href);
+      const listParam = url.searchParams.get('list');
+      if (listParam) {
+        peopleEl.value = listParam;
+        render(getLines());
+        setShareUrl();
+      }
+    }
+
+    openAllEl.addEventListener('click', () => {
+      const list = getLines();
+      list.forEach(q => {
+        if (q.trim()) {
+          const { url } = liUrl(q);
+          window.open(url, '_blank');
+        }
+      });
     });
-    openAllEl.style.display = filtered.length >= 2 ? 'block' : 'none';
-  }
 
-  function getLines() {
-    return peopleEl.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-  }
-
-  function setShareUrl() {
-    const raw = peopleEl.value.trim();
-    const url = new URL(window.location.href);
-    if (raw) {
-      url.searchParams.set('list', raw.replace(/\r?\n/g, '\n'));
-    } else {
-      url.searchParams.delete('list');
-    }
-    shareEl.value = url.toString();
-    window.history.replaceState(null, '', url);
-  }
-
-  function loadFromUrl() {
-    const url = new URL(window.location.href);
-    const listParam = url.searchParams.get('list');
-    if (listParam) {
-      peopleEl.value = listParam;
-      render(getLines());
+    $('#copyShare').addEventListener('click', async () => {
       setShareUrl();
-    }
-  }
-
-  openAllEl.addEventListener('click', () => {
-    const list = getLines();
-    list.forEach(q => {
-      if (q.trim()) {
-        const { url } = liUrl(q);
-        window.open(url, '_blank');
+      try {
+        await navigator.clipboard.writeText(shareEl.value);
+      } catch (_) {
+        shareEl.select();
+        document.execCommand('copy');
       }
     });
-  });
-
-  $('#copyShare').addEventListener('click', async () => {
-    setShareUrl();
-    try {
-      await navigator.clipboard.writeText(shareEl.value);
-    } catch (_) {
-      shareEl.select();
-      document.execCommand('copy');
-    }
-  });
 
     let t;
     peopleEl.addEventListener('input', () => {
@@ -171,8 +198,8 @@ John Smith Marketing"></textarea>
       }, 250);
     });
 
-  loadFromUrl();
-})();
-</script>
+    loadFromUrl();
+  })();
+  </script>
 </body>
 </html>
