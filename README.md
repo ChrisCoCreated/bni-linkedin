@@ -3,7 +3,7 @@
 This is a static web app that lets you paste a list of names (optionally with companies) and instantly get LinkedIn, Facebook and Google search links.
 
 ## How to use
-- Enter one person per line in the textarea.
+- Enter one person per line in the textarea. You can optionally start the line with the requester's name followed by a colon; this name will be shown in its own column and won't affect the search.
 - Links are generated automatically as you type.
 - Use **Open all in LinkedIn**, **Open all in Facebook** or **Open all in Google** to launch every search in a new tab (appears when there are at least two names).
 - Use **Copy shareable link** to generate a URL with your list embedded. Share it with the rest of the chapter to save time and increase referrals.
