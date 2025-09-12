@@ -107,15 +107,16 @@
 </head>
 <body>
   <h1>Quick LinkedIn Referral Finder for BNI Chapters</h1>
-  <p class="hint">Enter one person per line (e.g. <em>Chris Gage, Thrive Homecare</em> or <em>John Smith, Acme Ltd</em>).</p>
+  <p class="hint">Enter one person per line, optionally starting with the requester's name and a colon (e.g. <em>Alice: Chris Gage, Thrive Homecare</em> or <em>Bob: John Smith, Acme Ltd</em>).</p>
 
-  <textarea id="people" placeholder="Chris Gage, Thrive Homecare
-Jane Doe, Example Ltd
+  <textarea id="people" placeholder="Alice: Chris Gage, Thrive Homecare
+Bob: Jane Doe, Example Ltd
 John Smith Marketing"></textarea>
 
   <table id="results" aria-live="polite">
     <thead>
       <tr>
+        <th>Requester</th>
         <th>LinkedIn</th>
         <th>Facebook</th>
         <th>Google</th>
@@ -193,11 +194,15 @@ John Smith Marketing"></textarea>
 
       function render(list) {
         resultsBodyEl.innerHTML = '';
-        const filtered = list.filter(Boolean);
-        filtered.forEach(q => {
-          const { label, liUrl, fbUrl, gUrl } = searchUrls(q);
+        const filtered = list.filter(item => item.query.trim());
+        filtered.forEach(({ requestor, query }) => {
+          const { label, liUrl, fbUrl, gUrl } = searchUrls(query);
 
           const row = document.createElement('tr');
+
+          const reqTd = document.createElement('td');
+          reqTd.textContent = requestor;
+          row.appendChild(reqTd);
 
           const liTd = document.createElement('td');
           const liAnchor = document.createElement('a');
@@ -247,7 +252,13 @@ John Smith Marketing"></textarea>
       }
 
       function getLines() {
-        return peopleEl.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+        return peopleEl.value.split(/\r?\n/).map(line => {
+          const [requestorPart, queryPart] = line.split(':', 2);
+          if (queryPart === undefined) {
+            return { requestor: '', query: requestorPart.trim() };
+          }
+          return { requestor: requestorPart.trim(), query: queryPart.trim() };
+        });
       }
 
       function setShareUrl() {
@@ -274,9 +285,9 @@ John Smith Marketing"></textarea>
 
       openAllLinkedInEl.addEventListener('click', () => {
         const list = getLines();
-        list.forEach(q => {
-          if (q.trim()) {
-            const { liUrl } = searchUrls(q);
+        list.forEach(({ query }) => {
+          if (query.trim()) {
+            const { liUrl } = searchUrls(query);
             window.open(liUrl, '_blank');
           }
         });
@@ -284,9 +295,9 @@ John Smith Marketing"></textarea>
 
       openAllFacebookEl.addEventListener('click', () => {
         const list = getLines();
-        list.forEach(q => {
-          if (q.trim()) {
-            const { fbUrl } = searchUrls(q);
+        list.forEach(({ query }) => {
+          if (query.trim()) {
+            const { fbUrl } = searchUrls(query);
             window.open(fbUrl, '_blank');
           }
         });
@@ -294,9 +305,9 @@ John Smith Marketing"></textarea>
 
       openAllGoogleEl.addEventListener('click', () => {
         const list = getLines();
-        list.forEach(q => {
-          if (q.trim()) {
-            const { gUrl } = searchUrls(q);
+        list.forEach(({ query }) => {
+          if (query.trim()) {
+            const { gUrl } = searchUrls(query);
             window.open(gUrl, '_blank');
           }
         });
