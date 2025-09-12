@@ -113,18 +113,13 @@
 Jane Doe, Example Ltd
 John Smith Marketing"></textarea>
 
-  <table id="results" aria-live="polite">
-    <thead>
-      <tr><th>LinkedIn</th><th>Facebook</th></tr>
-    </thead>
-    <tbody id="resultsBody"></tbody>
-    <tfoot id="openAllRow">
-      <tr>
-        <td><button id="openAllLinkedIn"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" />Open all in LinkedIn</button></td>
-        <td><button id="openAllFacebook"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" />Open all in Facebook</button></td>
-      </tr>
-    </tfoot>
-  </table>
+  <ul id="results" aria-live="polite"></ul>
+
+  <div id="openAllRow" class="row">
+    <button id="openAllLinkedIn"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" />Open all in LinkedIn</button>
+    <button id="openAllFacebook"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" />Open all in Facebook</button>
+    <button id="openAllGoogle"><img class="icon" src="https://www.google.com/favicon.ico" alt="Google" />Open all in Google</button>
+  </div>
 
   <div class="row">
     <button id="copyShare">Copy shareable link</button>
@@ -176,21 +171,24 @@ John Smith Marketing"></textarea>
       const openAllRowEl = $('#openAllRow');
       const openAllLinkedInEl = $('#openAllLinkedIn');
       const openAllFacebookEl = $('#openAllFacebook');
+      const openAllGoogleEl = $('#openAllGoogle');
 
       function searchUrls(q) {
         const label = q.trim();
         const clean = label.replace(/\s+/g, ' ').replace(/\s*,\s*/g, ' ');
         const liUrl = 'https://www.linkedin.com/search/results/all?keywords=' + encodeURIComponent(clean);
         const fbUrl = 'https://www.facebook.com/search/top?q=' + encodeURIComponent(clean);
-        return { label, liUrl, fbUrl };
+        const gUrl = 'https://www.google.com/search?q=' + encodeURIComponent(clean);
+        return { label, liUrl, fbUrl, gUrl };
       }
 
       function render(list) {
         resultsBodyEl.innerHTML = '';
         const filtered = list.filter(Boolean);
         filtered.forEach(q => {
-          const { label, liUrl, fbUrl } = searchUrls(q);
-          const row = document.createElement('tr');
+          const { label, liUrl, fbUrl, gUrl } = searchUrls(q);
+          const li = document.createElement('li');
+
 
           const liTd = document.createElement('td');
           const liAnchor = document.createElement('a');
@@ -219,8 +217,20 @@ John Smith Marketing"></textarea>
           fbAnchor.appendChild(document.createTextNode(label));
           fbTd.appendChild(fbAnchor);
           row.appendChild(fbTd);
+          const gAnchor = document.createElement('a');
+          gAnchor.href = gUrl;
+          gAnchor.target = '_blank';
+          gAnchor.rel = 'noopener';
+          const gIcon = document.createElement('img');
+          gIcon.src = 'https://www.google.com/favicon.ico';
+          gIcon.alt = 'Google';
+          gIcon.className = 'icon';
+          gAnchor.appendChild(gIcon);
 
-          resultsBodyEl.appendChild(row);
+          li.appendChild(liAnchor);
+          li.appendChild(fbAnchor);
+          li.appendChild(gAnchor);
+          resultsEl.appendChild(li);
         });
         openAllRowEl.style.display = filtered.length >= 2 ? '' : 'none';
       }
@@ -267,6 +277,16 @@ John Smith Marketing"></textarea>
           if (q.trim()) {
             const { fbUrl } = searchUrls(q);
             window.open(fbUrl, '_blank');
+          }
+        });
+      });
+
+      openAllGoogleEl.addEventListener('click', () => {
+        const list = getLines();
+        list.forEach(q => {
+          if (q.trim()) {
+            const { gUrl } = searchUrls(q);
+            window.open(gUrl, '_blank');
           }
         });
       });
