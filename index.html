@@ -113,7 +113,16 @@
 Jane Doe, Example Ltd
 John Smith Marketing"></textarea>
 
-  <ul id="results" aria-live="polite"></ul>
+  <table id="results" aria-live="polite">
+    <thead>
+      <tr>
+        <th>LinkedIn</th>
+        <th>Facebook</th>
+        <th>Google</th>
+      </tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
 
   <div id="openAllRow" class="row">
     <button id="openAllLinkedIn"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" />Open all in LinkedIn</button>
@@ -187,8 +196,8 @@ John Smith Marketing"></textarea>
         const filtered = list.filter(Boolean);
         filtered.forEach(q => {
           const { label, liUrl, fbUrl, gUrl } = searchUrls(q);
-          const li = document.createElement('li');
 
+          const row = document.createElement('tr');
 
           const liTd = document.createElement('td');
           const liAnchor = document.createElement('a');
@@ -217,6 +226,8 @@ John Smith Marketing"></textarea>
           fbAnchor.appendChild(document.createTextNode(label));
           fbTd.appendChild(fbAnchor);
           row.appendChild(fbTd);
+
+          const gTd = document.createElement('td');
           const gAnchor = document.createElement('a');
           gAnchor.href = gUrl;
           gAnchor.target = '_blank';
@@ -226,11 +237,11 @@ John Smith Marketing"></textarea>
           gIcon.alt = 'Google';
           gIcon.className = 'icon';
           gAnchor.appendChild(gIcon);
+          gAnchor.appendChild(document.createTextNode(label));
+          gTd.appendChild(gAnchor);
+          row.appendChild(gTd);
 
-          li.appendChild(liAnchor);
-          li.appendChild(fbAnchor);
-          li.appendChild(gAnchor);
-          resultsEl.appendChild(li);
+          resultsBodyEl.appendChild(row);
         });
         openAllRowEl.style.display = filtered.length >= 2 ? '' : 'none';
       }
