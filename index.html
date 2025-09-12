@@ -106,6 +106,23 @@
   </style>
 </head>
 <body>
+  <h1>Quick LinkedIn Referral Finder for BNI Chapters</h1>
+  <p class="hint">Enter one person per line (e.g. <em>Chris Gage, Thrive Homecare</em> or <em>John Smith, Acme Ltd</em>).</p>
+
+  <textarea id="people" placeholder="Chris Gage, Thrive Homecare
+Jane Doe, Example Ltd
+John Smith Marketing"></textarea>
+
+  <ul id="results" aria-live="polite"></ul>
+
+  <button id="openAll">Open all in LinkedIn</button>
+
+  <div class="row">
+    <button id="copyShare">Copy shareable link</button>
+    <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
+  </div>
+  <p class="hint">Copy the link and share with the rest of the chapter to save you all time and increase referrals.</p>
+
   <section class="marketing">
     <div class="marketing-item" tabindex="0">
       <a class="card-cover" href="https://thrivehomecare.co.uk" target="_blank" rel="noopener">
@@ -135,5 +152,106 @@
       </a>
     </div>
   </section>
+
+  <div class="footer">
+    Built with referrals in mind by <a href="https://bnikent.co.uk/en-GB/memberdetails?encryptedMemberId=Q88w1PE3FMylGImDTiEfrQ%3D%3D&cmsv3=true&name=Chris+Gage" target="_blank" rel="noopener">Chris Gage</a> from <a href="https://thrivehomecare.co.uk" target="_blank" rel="noopener">Thrive Homecare</a>,
+    part of <a href="https://www.planwithcare.co.uk/" target="_blank" rel="noopener">Plan with Care</a>.
+  </div>
+
+  <script>
+    (function () {
+      const $ = (sel) => document.querySelector(sel);
+      const peopleEl = $('#people');
+      const resultsEl = $('#results');
+      const shareEl = $('#shareUrl');
+      const openAllEl = $('#openAll');
+
+      function liUrl(q) {
+        const url = 'https://www.linkedin.com/search/results/all?keywords=' + encodeURIComponent(
+          q.trim().replace(/\s+/g, ' ').replace(/\s*,\s*/g, ' ')
+        );
+        return { label: q.trim(), url };
+      }
+
+      function render(list) {
+        resultsEl.innerHTML = '';
+        const filtered = list.filter(Boolean);
+        filtered.forEach(q => {
+          const { label, url } = liUrl(q);
+          const li = document.createElement('li');
+          const icon = document.createElement('img');
+          icon.src = 'https://cdn-icons-png.flaticon.com/512/174/174857.png';
+          icon.alt = 'LinkedIn';
+          icon.className = 'icon';
+          const a = document.createElement('a');
+          a.href = url;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = label;
+          li.appendChild(icon);
+          li.appendChild(a);
+          resultsEl.appendChild(li);
+        });
+        openAllEl.style.display = filtered.length >= 2 ? 'block' : 'none';
+      }
+
+      function getLines() {
+        return peopleEl.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+      }
+
+      function setShareUrl() {
+        const raw = peopleEl.value.trim();
+        const url = new URL(window.location.href);
+        if (raw) {
+          url.searchParams.set('list', raw.replace(/\r?\n/g, '\n'));
+        } else {
+          url.searchParams.delete('list');
+        }
+        shareEl.value = url.toString();
+        window.history.replaceState(null, '', url);
+      }
+
+      function loadFromUrl() {
+        const url = new URL(window.location.href);
+        const listParam = url.searchParams.get('list');
+        if (listParam) {
+          peopleEl.value = listParam;
+          render(getLines());
+          setShareUrl();
+        }
+      }
+
+      openAllEl.addEventListener('click', () => {
+        const list = getLines();
+        list.forEach(q => {
+          if (q.trim()) {
+            const { url } = liUrl(q);
+            window.open(url, '_blank');
+          }
+        });
+      });
+
+      $('#copyShare').addEventListener('click', async () => {
+        setShareUrl();
+        try {
+          await navigator.clipboard.writeText(shareEl.value);
+        } catch (_) {
+          shareEl.select();
+          document.execCommand('copy');
+        }
+      });
+
+      let t;
+      peopleEl.addEventListener('input', () => {
+        clearTimeout(t);
+        t = setTimeout(() => {
+          render(getLines());
+          setShareUrl();
+        }, 250);
+      });
+
+      loadFromUrl();
+    })();
+  </script>
 </body>
 </html>
