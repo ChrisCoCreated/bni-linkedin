@@ -16,8 +16,9 @@
     button { cursor: pointer; border-radius: 8px; border: 1px solid #ddd; background: #fafafa; }
     button:hover { background: #f2f2f2; }
     #shareUrl { flex: 1 1 360px; min-width: 240px; border: 1px solid #ddd; border-radius: 8px; }
-    li img.icon { width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; }
-    #openAll { display: none; margin-top: 12px; }
+    img.icon { width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; }
+    li a + a { margin-left: 8px; }
+    #openAllRow { display: none; margin: 12px 0; }
 
     ul { padding-left: 20px; }
     li { margin: 6px 0; }
@@ -115,7 +116,10 @@ John Smith Marketing"></textarea>
 
   <ul id="results" aria-live="polite"></ul>
 
-  <button id="openAll">Open all in LinkedIn</button>
+  <div id="openAllRow" class="row">
+    <button id="openAllLinkedIn"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" />Open all in LinkedIn</button>
+    <button id="openAllFacebook"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" />Open all in Facebook</button>
+  </div>
 
   <div class="row">
     <button id="copyShare">Copy shareable link</button>
@@ -164,35 +168,51 @@ John Smith Marketing"></textarea>
       const peopleEl = $('#people');
       const resultsEl = $('#results');
       const shareEl = $('#shareUrl');
-      const openAllEl = $('#openAll');
+      const openAllRowEl = $('#openAllRow');
+      const openAllLinkedInEl = $('#openAllLinkedIn');
+      const openAllFacebookEl = $('#openAllFacebook');
 
-      function liUrl(q) {
-        const url = 'https://www.linkedin.com/search/results/all?keywords=' + encodeURIComponent(
-          q.trim().replace(/\s+/g, ' ').replace(/\s*,\s*/g, ' ')
-        );
-        return { label: q.trim(), url };
+      function searchUrls(q) {
+        const label = q.trim();
+        const clean = label.replace(/\s+/g, ' ').replace(/\s*,\s*/g, ' ');
+        const liUrl = 'https://www.linkedin.com/search/results/all?keywords=' + encodeURIComponent(clean);
+        const fbUrl = 'https://www.facebook.com/search/top?q=' + encodeURIComponent(clean);
+        return { label, liUrl, fbUrl };
       }
 
       function render(list) {
         resultsEl.innerHTML = '';
         const filtered = list.filter(Boolean);
         filtered.forEach(q => {
-          const { label, url } = liUrl(q);
+          const { label, liUrl, fbUrl } = searchUrls(q);
           const li = document.createElement('li');
-          const icon = document.createElement('img');
-          icon.src = 'https://cdn-icons-png.flaticon.com/512/174/174857.png';
-          icon.alt = 'LinkedIn';
-          icon.className = 'icon';
-          const a = document.createElement('a');
-          a.href = url;
-          a.target = '_blank';
-          a.rel = 'noopener';
-          a.textContent = label;
-          li.appendChild(icon);
-          li.appendChild(a);
+
+          const liAnchor = document.createElement('a');
+          liAnchor.href = liUrl;
+          liAnchor.target = '_blank';
+          liAnchor.rel = 'noopener';
+          const liIcon = document.createElement('img');
+          liIcon.src = 'https://cdn-icons-png.flaticon.com/512/174/174857.png';
+          liIcon.alt = 'LinkedIn';
+          liIcon.className = 'icon';
+          liAnchor.appendChild(liIcon);
+          liAnchor.appendChild(document.createTextNode(label));
+
+          const fbAnchor = document.createElement('a');
+          fbAnchor.href = fbUrl;
+          fbAnchor.target = '_blank';
+          fbAnchor.rel = 'noopener';
+          const fbIcon = document.createElement('img');
+          fbIcon.src = 'https://cdn-icons-png.flaticon.com/512/733/733547.png';
+          fbIcon.alt = 'Facebook';
+          fbIcon.className = 'icon';
+          fbAnchor.appendChild(fbIcon);
+
+          li.appendChild(liAnchor);
+          li.appendChild(fbAnchor);
           resultsEl.appendChild(li);
         });
-        openAllEl.style.display = filtered.length >= 2 ? 'block' : 'none';
+        openAllRowEl.style.display = filtered.length >= 2 ? 'flex' : 'none';
       }
 
       function getLines() {
@@ -221,12 +241,22 @@ John Smith Marketing"></textarea>
         }
       }
 
-      openAllEl.addEventListener('click', () => {
+      openAllLinkedInEl.addEventListener('click', () => {
         const list = getLines();
         list.forEach(q => {
           if (q.trim()) {
-            const { url } = liUrl(q);
-            window.open(url, '_blank');
+            const { liUrl } = searchUrls(q);
+            window.open(liUrl, '_blank');
+          }
+        });
+      });
+
+      openAllFacebookEl.addEventListener('click', () => {
+        const list = getLines();
+        list.forEach(q => {
+          if (q.trim()) {
+            const { fbUrl } = searchUrls(q);
+            window.open(fbUrl, '_blank');
           }
         });
       });
