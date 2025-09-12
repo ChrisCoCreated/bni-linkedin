@@ -17,11 +17,10 @@
     button:hover { background: #f2f2f2; }
     #shareUrl { flex: 1 1 360px; min-width: 240px; border: 1px solid #ddd; border-radius: 8px; }
     img.icon { width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; }
-    li a + a { margin-left: 8px; }
-    #openAllRow { display: none; margin: 12px 0; }
-
-    ul { padding-left: 20px; }
-    li { margin: 6px 0; }
+    #openAllRow { display: none; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #ddd; }
+    tfoot td { border-bottom: none; padding-top: 12px; }
 
     .marketing { margin: 32px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
 
@@ -167,7 +166,7 @@ John Smith Marketing"></textarea>
     (function () {
       const $ = (sel) => document.querySelector(sel);
       const peopleEl = $('#people');
-      const resultsEl = $('#results');
+      const resultsBodyEl = $('#resultsBody');
       const shareEl = $('#shareUrl');
       const openAllRowEl = $('#openAllRow');
       const openAllLinkedInEl = $('#openAllLinkedIn');
@@ -184,12 +183,14 @@ John Smith Marketing"></textarea>
       }
 
       function render(list) {
-        resultsEl.innerHTML = '';
+        resultsBodyEl.innerHTML = '';
         const filtered = list.filter(Boolean);
         filtered.forEach(q => {
           const { label, liUrl, fbUrl, gUrl } = searchUrls(q);
           const li = document.createElement('li');
 
+
+          const liTd = document.createElement('td');
           const liAnchor = document.createElement('a');
           liAnchor.href = liUrl;
           liAnchor.target = '_blank';
@@ -200,7 +201,10 @@ John Smith Marketing"></textarea>
           liIcon.className = 'icon';
           liAnchor.appendChild(liIcon);
           liAnchor.appendChild(document.createTextNode(label));
+          liTd.appendChild(liAnchor);
+          row.appendChild(liTd);
 
+          const fbTd = document.createElement('td');
           const fbAnchor = document.createElement('a');
           fbAnchor.href = fbUrl;
           fbAnchor.target = '_blank';
@@ -210,7 +214,9 @@ John Smith Marketing"></textarea>
           fbIcon.alt = 'Facebook';
           fbIcon.className = 'icon';
           fbAnchor.appendChild(fbIcon);
-
+          fbAnchor.appendChild(document.createTextNode(label));
+          fbTd.appendChild(fbAnchor);
+          row.appendChild(fbTd);
           const gAnchor = document.createElement('a');
           gAnchor.href = gUrl;
           gAnchor.target = '_blank';
@@ -226,7 +232,7 @@ John Smith Marketing"></textarea>
           li.appendChild(gAnchor);
           resultsEl.appendChild(li);
         });
-        openAllRowEl.style.display = filtered.length >= 2 ? 'flex' : 'none';
+        openAllRowEl.style.display = filtered.length >= 2 ? '' : 'none';
       }
 
       function getLines() {
