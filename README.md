@@ -1,12 +1,12 @@
-# LinkedIn Search Link Builder
+# Quick LinkedIn Referral Finder for BNI Chapters
 
 This is a static web app that lets you paste a list of names (optionally with companies) and instantly get LinkedIn search links.
 
 ## How to use
 - Enter one person per line in the textarea.
 - Links are generated automatically as you type.
-- Use **Open all in tabs** to launch every search in a new tab.
-- Use **Copy shareable link** to generate a URL with your list embedded.
+- Use **Open all in LinkedIn** to launch every search in a new tab (appears when there are at least two names).
+- Use **Copy shareable link** to generate a URL with your list embedded. Share it with the rest of the chapter to save time and increase referrals.
 
 ## Deployment on Vercel
 1. Push this repo to GitHub.
