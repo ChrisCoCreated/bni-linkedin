@@ -152,6 +152,36 @@
 <body>
   <h1>BNI Referral Contact Generator</h1>
   <p>This tool helps BNI members quickly look up referral contacts. Enter names to get LinkedIn, Facebook, and Google search links, use the “Open all” buttons to launch every search, and share results with generated URLs.</p>
+
+  <section id="referralSection" style="display: none;">
+    <h2>Referral links</h2>
+    <div class="table-wrapper">
+      <table id="results" aria-live="polite">
+        <thead>
+          <tr>
+            <th>Requester</th>
+            <th>LinkedIn</th>
+            <th>Facebook</th>
+            <th>Google</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+
+    <div id="openAllRow" class="row">
+      <button id="openAllLinkedIn"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" />Open all in LinkedIn</button>
+      <button id="openAllFacebook"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" />Open all in Facebook</button>
+      <button id="openAllGoogle"><img class="icon" src="https://www.google.com/favicon.ico" alt="Google" />Open all in Google</button>
+    </div>
+
+    <div class="row">
+      <button id="copyShare">Copy shareable link</button>
+      <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
+    </div>
+    <p class="hint">Copy the link and share with the rest of the chapter to save you all time and increase referrals.</p>
+  </section>
+
   <h2>How to use</h2>
   <p class="hint">Enter one person per line, optionally starting with the requester's name and a colon (e.g. <em>Alice: Chris Gage, Thrive Homecare</em> or <em>Bob: John Smith, Acme Ltd</em>).</p>
 
@@ -159,32 +189,7 @@
 Bob: Jane Doe, Example Ltd
 John Smith Marketing"></textarea>
 
-  <div class="table-wrapper">
-    <table id="results" aria-live="polite">
-      <thead>
-        <tr>
-          <th>Requester</th>
-          <th>LinkedIn</th>
-          <th>Facebook</th>
-          <th>Google</th>
-        </tr>
-      </thead>
-      <tbody id="resultsBody"></tbody>
-    </table>
-  </div>
-
-  <div id="openAllRow" class="row">
-    <button id="openAllLinkedIn"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" />Open all in LinkedIn</button>
-    <button id="openAllFacebook"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" />Open all in Facebook</button>
-    <button id="openAllGoogle"><img class="icon" src="https://www.google.com/favicon.ico" alt="Google" />Open all in Google</button>
-  </div>
-
-  <div class="row">
-    <button id="copyShare">Copy shareable link</button>
-    <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
-  </div>
-  <p class="hint">Copy the link and share with the rest of the chapter to save you all time and increase referrals.</p>
-
+  <h2>This tool was developed by Thrive to make fellow BNI members' lives that bit better</h2>
   <section class="marketing">
     <div class="marketing-item" tabindex="0">
       <a class="card-cover" href="https://thrivehomecare.co.uk" target="_blank" rel="noopener">
@@ -226,6 +231,7 @@ John Smith Marketing"></textarea>
       const peopleEl = $('#people');
       const resultsBodyEl = $('#resultsBody');
       const shareEl = $('#shareUrl');
+      const referralSectionEl = $('#referralSection');
       const openAllRowEl = $('#openAllRow');
       const openAllLinkedInEl = $('#openAllLinkedIn');
       const openAllFacebookEl = $('#openAllFacebook');
@@ -311,8 +317,9 @@ John Smith Marketing"></textarea>
           mSearchTd.appendChild(actionsDiv);
           mRow.appendChild(mSearchTd);
 
-          resultsBodyEl.appendChild(mRow);
+        resultsBodyEl.appendChild(mRow);
         });
+        referralSectionEl.style.display = filtered.length ? 'block' : 'none';
         openAllRowEl.style.display = filtered.length >= 2 ? 'flex' : 'none';
       }
 
