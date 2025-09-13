@@ -7,6 +7,7 @@ This is a static web app for BNI members to paste a list of names (optionally wi
 - Links are generated automatically as you type.
 - Use **Open all in LinkedIn**, **Open all in Facebook** or **Open all in Google** to launch every search in a new tab (appears when there are at least two names).
 - Use **Copy shareable link** to generate a URL with your list embedded. Share it with the rest of the chapter to save time and increase referrals.
+- Optionally add the meeting name and date; they will be included in the shareable URL.
 
 ## Deployment on Vercel
 1. Push this repo to GitHub.
