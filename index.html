@@ -110,29 +110,32 @@
 
     @media (max-width: 540px) {
       .marketing-item {
-        grid-template-columns: 1fr;
-        padding-bottom: 72px;
+        grid-template-columns: 96px 1fr;
+        grid-template-rows: auto auto;
+        padding-bottom: 16px;
       }
       .marketing-item a.card-cover {
-        grid-row: 1;
+        grid-row: 1 / span 2;
         grid-column: 1;
       }
       .marketing-item img.main {
-        width: 100%;
-        height: auto;
+        width: 96px;
+        height: 96px;
       }
       .marketing-item .content {
-        grid-column: 1;
+        grid-column: 2;
+        grid-row: 1;
         padding-right: 0;
         min-height: 0;
-        margin-top: 12px;
       }
       .marketing-item .company-logo {
-        top: auto;
-        bottom: 12px;
-        right: 12px;
+        position: static;
+        grid-column: 2;
+        grid-row: 2;
+        margin-top: 8px;
         width: 100px;
         height: 44px;
+        justify-self: end;
       }
       .marketing-item .company-logo img {
         max-height: 36px;
