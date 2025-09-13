@@ -1,6 +1,6 @@
-# Quick LinkedIn Referral Finder for BNI Chapters
+# BNI Referral Contact Generator
 
-This is a static web app that lets you paste a list of names (optionally with companies) and instantly get LinkedIn, Facebook and Google search links.
+This is a static web app for BNI members to paste a list of names (optionally with companies) and instantly get LinkedIn, Facebook and Google search links. It also provides "Open all" buttons and shareable URLs to speed up networking.
 
 ## How to use
 - Enter one person per line in the textarea. You can optionally start the line with the requester's name followed by a colon; this name will be shown in its own column and won't affect the search.
