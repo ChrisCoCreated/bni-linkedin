@@ -185,6 +185,12 @@ John Smith Marketing"></textarea>
   </div>
   <p class="hint">Copy the link and share with the rest of the chapter to save you all time and increase referrals.</p>
 
+  <div class="row">
+    <button id="openBlank">Open blank</button>
+    <button id="copyBlank">Copy blank link</button>
+    <button id="emailBlank">Email blank link</button>
+  </div>
+
   <section class="marketing">
     <div class="marketing-item" tabindex="0">
       <a class="card-cover" href="https://thrivehomecare.co.uk" target="_blank" rel="noopener">
@@ -230,6 +236,9 @@ John Smith Marketing"></textarea>
       const openAllLinkedInEl = $('#openAllLinkedIn');
       const openAllFacebookEl = $('#openAllFacebook');
       const openAllGoogleEl = $('#openAllGoogle');
+      const openBlankEl = $('#openBlank');
+      const copyBlankEl = $('#copyBlank');
+      const emailBlankEl = $('#emailBlank');
 
       function searchUrls(q) {
         const label = q.trim();
@@ -386,6 +395,30 @@ John Smith Marketing"></textarea>
           shareEl.select();
           document.execCommand('copy');
         }
+      });
+
+      openBlankEl.addEventListener('click', () => {
+        const baseUrl = window.location.origin + window.location.pathname;
+        window.open(baseUrl, '_blank');
+      });
+
+      copyBlankEl.addEventListener('click', async () => {
+        const baseUrl = window.location.origin + window.location.pathname;
+        try {
+          await navigator.clipboard.writeText(baseUrl);
+        } catch (_) {
+          const temp = document.createElement('input');
+          temp.value = baseUrl;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          document.body.removeChild(temp);
+        }
+      });
+
+      emailBlankEl.addEventListener('click', () => {
+        const baseUrl = window.location.origin + window.location.pathname;
+        window.open(`mailto:?subject=BNI%20Referral%20Contact%20Generator&body=${encodeURIComponent(baseUrl)}`);
       });
 
       let t;
