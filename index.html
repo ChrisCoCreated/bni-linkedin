@@ -194,6 +194,11 @@
 Bob: Jane Doe, Example Ltd
 John Smith Marketing"></textarea>
 
+  <div class="row">
+    <button id="openBlank" type="button">Open blank tool</button>
+    <button id="copyBlank" type="button">Share this tool</button>
+  </div>
+
   <h3>This tool was developed by Thrive to make fellow BNI members' lives that bit better</h3>
   <section class="marketing">
     <div class="marketing-item" tabindex="0">
@@ -435,6 +440,19 @@ John Smith Marketing"></textarea>
       if (copyBlankEl) {
         copyBlankEl.addEventListener('click', async () => {
           const baseUrl = window.location.origin + window.location.pathname;
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: 'BNI Referral Contact Generator',
+                url: baseUrl,
+              });
+              return;
+            } catch (err) {
+              if (err && err.name === 'AbortError') {
+                return;
+              }
+            }
+          }
           try {
             await navigator.clipboard.writeText(baseUrl);
           } catch (_) {
