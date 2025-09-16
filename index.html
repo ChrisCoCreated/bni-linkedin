@@ -425,29 +425,35 @@ John Smith Marketing"></textarea>
         }
       });
 
-      openBlankEl.addEventListener('click', () => {
-        const baseUrl = window.location.origin + window.location.pathname;
-        window.open(baseUrl, '_blank');
-      });
+      if (openBlankEl) {
+        openBlankEl.addEventListener('click', () => {
+          const baseUrl = window.location.origin + window.location.pathname;
+          window.open(baseUrl, '_blank');
+        });
+      }
 
-      copyBlankEl.addEventListener('click', async () => {
-        const baseUrl = window.location.origin + window.location.pathname;
-        try {
-          await navigator.clipboard.writeText(baseUrl);
-        } catch (_) {
-          const temp = document.createElement('input');
-          temp.value = baseUrl;
-          document.body.appendChild(temp);
-          temp.select();
-          document.execCommand('copy');
-          document.body.removeChild(temp);
-        }
-      });
+      if (copyBlankEl) {
+        copyBlankEl.addEventListener('click', async () => {
+          const baseUrl = window.location.origin + window.location.pathname;
+          try {
+            await navigator.clipboard.writeText(baseUrl);
+          } catch (_) {
+            const temp = document.createElement('input');
+            temp.value = baseUrl;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+          }
+        });
+      }
 
-      emailBlankEl.addEventListener('click', () => {
-        const baseUrl = window.location.origin + window.location.pathname;
-        window.open(`mailto:?subject=BNI%20Referral%20Contact%20Generator&body=${encodeURIComponent(baseUrl)}`);
-      });
+      if (emailBlankEl) {
+        emailBlankEl.addEventListener('click', () => {
+          const baseUrl = window.location.origin + window.location.pathname;
+          window.open(`mailto:?subject=BNI%20Referral%20Contact%20Generator&body=${encodeURIComponent(baseUrl)}`);
+        });
+      }
 
       let t;
       peopleEl.addEventListener('input', () => {
@@ -462,6 +468,7 @@ John Smith Marketing"></textarea>
       meetingDateEl.addEventListener('input', setShareUrl);
 
       loadFromUrl();
+      render(getLines());
     })();
   </script>
 </body>
