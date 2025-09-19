@@ -28,10 +28,11 @@
     .mobile-row { display: none; }
 
     .editor-controls { margin: 32px 0; }
-    .viewer-controls { display: none; }
+    .editor-controls .editor-panel { display: block; }
+    .viewer-controls { display: none; align-items: center; gap: 12px; }
     .viewer-controls p { margin: 0; }
 
-    body[data-mode="viewer"] .editor-controls { display: none; }
+    body[data-mode="viewer"] .editor-controls .editor-panel { display: none; }
     body[data-mode="viewer"] .viewer-controls { display: flex; }
     body[data-mode="editor"] .viewer-controls { display: none; }
 
@@ -197,18 +198,20 @@
   </section>
 
   <section class="editor-controls">
-    <h2>How to use</h2>
-    <p class="hint">Enter one person per line, optionally starting with the requester's name and a colon (e.g. <em>Alice: Chris Gage, Thrive Homecare</em> or <em>Bob: John Smith, Acme Ltd</em>).</p>
+    <div class="editor-panel">
+      <h2>How to use</h2>
+      <p class="hint">Enter one person per line, optionally starting with the requester's name and a colon (e.g. <em>Alice: Chris Gage, Thrive Homecare</em> or <em>Bob: John Smith, Acme Ltd</em>).</p>
 
-    <div class="row">
-      <input id="meetingName" type="text" placeholder="Meeting name" />
-      <input id="meetingDate" type="date" />
-    </div>
+      <div class="row">
+        <input id="meetingName" type="text" placeholder="Meeting name" />
+        <input id="meetingDate" type="date" />
+      </div>
 
-    <textarea id="people" placeholder="Alice: Chris Gage, Thrive Homecare
+      <textarea id="people" placeholder="Alice: Chris Gage, Thrive Homecare
 Bob: Jane Doe, Example Ltd
 John Smith Marketing"></textarea>
-    <div class="row">
+    </div>
+    <div class="row share-tools">
       <button id="openBlank" type="button">Open blank tool</button>
       <button id="copyBlank" type="button">Share this tool</button>
     </div>
@@ -458,12 +461,6 @@ John Smith Marketing"></textarea>
         peopleEl.readOnly = isViewer;
         meetingNameEl.readOnly = isViewer;
         meetingDateEl.disabled = isViewer;
-        if (openBlankEl) {
-          openBlankEl.disabled = isViewer;
-        }
-        if (copyBlankEl) {
-          copyBlankEl.disabled = isViewer;
-        }
         setShareUrl();
       }
 
