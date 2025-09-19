@@ -17,8 +17,12 @@
     button { cursor: pointer; border-radius: 8px; border: 1px solid #ddd; background: #fafafa; }
     button:hover { background: #f2f2f2; }
     #shareUrl { flex: 1 1 360px; min-width: 240px; border: 1px solid #ddd; border-radius: 8px; }
+    #instructionsViewer { display: none; }
+    body[data-mode="viewer"] #instructionsEditor { display: none; }
+    body[data-mode="viewer"] #instructionsViewer { display: block; }
     img.icon { width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; }
     #openAllRow { display: none; }
+    #openAllRow button { width: 100%; }
     .table-wrapper { width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #ddd; }
@@ -161,7 +165,8 @@
 </head>
 <body>
   <h1>BNI Referral Contact Generator</h1>
-  <p>This tool helps BNI members quickly look up referral contacts. Enter names to get LinkedIn, Facebook, and Google search links, use the “Open all” buttons to launch every search, and share results with generated URLs.</p>
+  <p id="instructionsEditor">Use this referral helper during your BNI meeting. Enter each requested contact to generate LinkedIn, Facebook, and Google searches, launch every search at once with the “Open all” buttons, and share the compiled lookup list with the generated URL.</p>
+  <p id="instructionsViewer">Review this shared referral list during your BNI meeting. Use the LinkedIn, Facebook, and Google links or the “Open all” buttons to check each contact, and enable editing if you need to tailor the list for your chapter.</p>
 
   <section id="referralSection" style="display: none;">
     <h2>Referral links</h2>
@@ -177,13 +182,21 @@
           </tr>
         </thead>
         <tbody id="resultsBody"></tbody>
+        <tfoot>
+          <tr id="openAllRow">
+            <td></td>
+            <td>
+              <button id="openAllLinkedIn"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" />Open all in LinkedIn</button>
+            </td>
+            <td>
+              <button id="openAllFacebook"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" />Open all in Facebook</button>
+            </td>
+            <td>
+              <button id="openAllGoogle"><img class="icon" src="https://www.google.com/favicon.ico" alt="Google" />Open all in Google</button>
+            </td>
+          </tr>
+        </tfoot>
       </table>
-    </div>
-
-    <div id="openAllRow" class="row">
-      <button id="openAllLinkedIn"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" />Open all in LinkedIn</button>
-      <button id="openAllFacebook"><img class="icon" src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" />Open all in Facebook</button>
-      <button id="openAllGoogle"><img class="icon" src="https://www.google.com/favicon.ico" alt="Google" />Open all in Google</button>
     </div>
 
     <div class="row">
@@ -358,7 +371,7 @@ John Smith Marketing"></textarea>
         resultsBodyEl.appendChild(mRow);
         });
         referralSectionEl.style.display = filtered.length ? 'block' : 'none';
-        openAllRowEl.style.display = filtered.length >= 2 ? 'flex' : 'none';
+        openAllRowEl.style.display = filtered.length >= 2 ? 'table-row' : 'none';
       }
 
       function getLines() {
