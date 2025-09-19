@@ -315,7 +315,6 @@ John Smith Marketing"></textarea>
           if (item.type === 'note') {
             const dRow = document.createElement('tr');
             dRow.className = 'desktop-row note-row';
-
             const requestorTd = document.createElement('td');
             requestorTd.textContent = item.requestor || '';
             dRow.appendChild(requestorTd);
