@@ -213,7 +213,7 @@
   <section class="editor-controls">
     <div class="editor-panel">
       <h2>How to use</h2>
-      <p class="hint">Enter one person per line, optionally starting with the requester's name and a colon (e.g. <em>Alice: Chris Gage, Thrive Homecare</em> or <em>Bob: John Smith, Acme Ltd</em>). Start a line with an asterisk (e.g. <em>*Reminder: Bring business cards</em>) to add plain text notes without links.</p>
+      <p class="hint">Enter one person per line, optionally starting with the requester's name and a colon (e.g. <em>Alice: Chris Gage, Thrive Homecare</em> or <em>Bob: John Smith, Acme Ltd</em>). Start a line with an asterisk (e.g. <em>*Claire: Independent estate agent in the Canterbury</em>) to add plain text notes without links.</p>
 
       <div class="row">
         <input id="meetingName" type="text" placeholder="Meeting name" />
@@ -222,7 +222,7 @@
 
       <textarea id="people" placeholder="Alice: Chris Gage, Thrive Homecare
 Bob: Jane Doe, Example Ltd
-*Reminder: Bring business cards
+*Claire: Independent estate agent in the Canterbury
 John Smith Marketing"></textarea>
     </div>
     <div class="row share-tools">
@@ -302,7 +302,9 @@ John Smith Marketing"></textarea>
         resultsBodyEl.innerHTML = '';
         const filtered = list.filter((item) => {
           if (item.type === 'note') {
-            return item.text.trim();
+            const noteText = (item.text || '').trim();
+            const requestorText = (item.requestor || '').trim();
+            return noteText || requestorText;
           }
           if (item.type === 'contact') {
             return item.query.trim();
@@ -313,12 +315,12 @@ John Smith Marketing"></textarea>
           if (item.type === 'note') {
             const dRow = document.createElement('tr');
             dRow.className = 'desktop-row note-row';
-
-            const blankTd = document.createElement('td');
-            dRow.appendChild(blankTd);
+            const requestorTd = document.createElement('td');
+            requestorTd.textContent = item.requestor || '';
+            dRow.appendChild(requestorTd);
 
             const noteTd = document.createElement('td');
-            noteTd.textContent = item.text;
+            noteTd.textContent = item.text || '';
             dRow.appendChild(noteTd);
 
             for (let i = 0; i < 2; i += 1) {
@@ -330,10 +332,13 @@ John Smith Marketing"></textarea>
             const mRow = document.createElement('tr');
             mRow.className = 'mobile-row note-row';
 
-            const mTd = document.createElement('td');
-            mTd.colSpan = 2;
-            mTd.textContent = item.text;
-            mRow.appendChild(mTd);
+            const mReqTd = document.createElement('td');
+            mReqTd.textContent = item.requestor || '';
+            mRow.appendChild(mReqTd);
+
+            const mNoteTd = document.createElement('td');
+            mNoteTd.textContent = item.text || '';
+            mRow.appendChild(mNoteTd);
 
             resultsBodyEl.appendChild(mRow);
             return;
@@ -418,13 +423,20 @@ John Smith Marketing"></textarea>
         return peopleEl.value.split(/\r?\n/).map((line) => {
           const trimmedStart = line.trimStart();
           if (trimmedStart.startsWith('*')) {
-            const noteBody = trimmedStart.slice(1).trim();
-            if (!noteBody) {
-              return { type: 'note', text: '' };
+            const noteBody = trimmedStart.slice(1);
+            const trimmedNoteBody = noteBody.trim();
+            if (!trimmedNoteBody) {
+              return { type: 'note', requestor: '', text: '' };
             }
-            const [beforeColon, afterColon] = noteBody.split(':', 2);
-            const text = afterColon !== undefined ? afterColon.trim() : beforeColon.trim();
-            return { type: 'note', text };
+            const [beforeColon, afterColon] = trimmedNoteBody.split(':', 2);
+            if (afterColon === undefined) {
+              return { type: 'note', requestor: '', text: beforeColon.trim() };
+            }
+            return {
+              type: 'note',
+              requestor: beforeColon.trim(),
+              text: afterColon.trim(),
+            };
           }
           const [requestorPart, queryPart] = line.split(':', 2);
           if (queryPart === undefined) {
