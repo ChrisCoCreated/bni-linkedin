@@ -10,6 +10,7 @@
     body { margin: 0; padding: 24px; background: #fff; color: #111; }
     h1 { margin: 0 0 8px }
     p.hint { margin: 0 0 16px; color: #555 }
+    .meeting-heading { margin: 0 0 16px; font-size: 16px; font-weight: 600; color: #444; }
     textarea { width: 100%; min-height: 160px; padding: 12px; font: inherit; border: 1px solid #ddd; border-radius: 8px; }
     .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 20px; }
     button, input[type="text"], input[type="date"] { font: inherit; padding: 10px 12px; }
@@ -155,6 +156,7 @@
 
   <section id="referralSection" style="display: none;">
     <h2>Referral links</h2>
+    <h3 id="meetingHeading" class="meeting-heading" hidden></h3>
     <div class="table-wrapper">
       <table id="results" aria-live="polite">
         <thead>
@@ -241,6 +243,7 @@ John Smith Marketing"></textarea>
       const peopleEl = $('#people');
       const meetingNameEl = $('#meetingName');
       const meetingDateEl = $('#meetingDate');
+      const meetingHeadingEl = $('#meetingHeading');
       const resultsBodyEl = $('#resultsBody');
       const shareEl = $('#shareUrl');
       const referralSectionEl = $('#referralSection');
@@ -370,6 +373,51 @@ John Smith Marketing"></textarea>
         }
         shareEl.value = url.toString();
         window.history.replaceState(null, '', url);
+        updateMeetingHeading();
+      }
+
+      function formatMeetingDate(value) {
+        if (!value) {
+          return '';
+        }
+        const [year, month, day] = value.split('-').map(Number);
+        if (
+          Number.isNaN(year) ||
+          Number.isNaN(month) ||
+          Number.isNaN(day)
+        ) {
+          return value;
+        }
+        const date = new Date(Date.UTC(year, month - 1, day));
+        return date.toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          timeZone: 'UTC',
+        });
+      }
+
+      function updateMeetingHeading() {
+        if (!meetingHeadingEl) {
+          return;
+        }
+        const meetingName = meetingNameEl.value.trim();
+        const meetingDate = meetingDateEl.value;
+        const parts = [];
+        if (meetingName) {
+          parts.push(meetingName);
+        }
+        const formattedDate = formatMeetingDate(meetingDate);
+        if (formattedDate) {
+          parts.push(formattedDate);
+        }
+        if (parts.length) {
+          meetingHeadingEl.textContent = parts.join(' — ');
+          meetingHeadingEl.hidden = false;
+        } else {
+          meetingHeadingEl.textContent = '';
+          meetingHeadingEl.hidden = true;
+        }
       }
 
       function loadFromUrl() {
