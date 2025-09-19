@@ -27,6 +27,14 @@
     td .actions img.icon { margin-right: 0; }
     .mobile-row { display: none; }
 
+    .editor-controls { margin: 32px 0; }
+    .viewer-controls { display: none; }
+    .viewer-controls p { margin: 0; }
+
+    body[data-mode="viewer"] .editor-controls { display: none; }
+    body[data-mode="viewer"] .viewer-controls { display: flex; }
+    body[data-mode="editor"] .viewer-controls { display: none; }
+
     .marketing { margin: 32px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
 
     .marketing-item {
@@ -181,25 +189,30 @@
       <button id="copyShare">Copy shareable link</button>
       <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
     </div>
+    <div class="viewer-controls row">
+      <p class="hint">Want to make changes? Enable editing to start your own list.</p>
+      <button id="enableEditing" type="button">Enable editing</button>
+    </div>
     <p class="hint">Copy the link and share with the rest of the chapter to save you all time and increase referrals.</p>
   </section>
 
-  <h2>How to use</h2>
-  <p class="hint">Enter one person per line, optionally starting with the requester's name and a colon (e.g. <em>Alice: Chris Gage, Thrive Homecare</em> or <em>Bob: John Smith, Acme Ltd</em>).</p>
+  <section class="editor-controls">
+    <h2>How to use</h2>
+    <p class="hint">Enter one person per line, optionally starting with the requester's name and a colon (e.g. <em>Alice: Chris Gage, Thrive Homecare</em> or <em>Bob: John Smith, Acme Ltd</em>).</p>
 
-  <div class="row">
-    <input id="meetingName" type="text" placeholder="Meeting name" />
-    <input id="meetingDate" type="date" />
-  </div>
+    <div class="row">
+      <input id="meetingName" type="text" placeholder="Meeting name" />
+      <input id="meetingDate" type="date" />
+    </div>
 
-  <textarea id="people" placeholder="Alice: Chris Gage, Thrive Homecare
+    <textarea id="people" placeholder="Alice: Chris Gage, Thrive Homecare
 Bob: Jane Doe, Example Ltd
 John Smith Marketing"></textarea>
-
-  <div class="row">
-    <button id="openBlank" type="button">Open blank tool</button>
-    <button id="copyBlank" type="button">Share this tool</button>
-  </div>
+    <div class="row">
+      <button id="openBlank" type="button">Open blank tool</button>
+      <button id="copyBlank" type="button">Share this tool</button>
+    </div>
+  </section>
 
   <h3>This tool was developed by Thrive to make fellow BNI members' lives that bit better</h3>
   <section class="marketing">
@@ -240,6 +253,7 @@ John Smith Marketing"></textarea>
   <script>
     (function () {
       const $ = (sel) => document.querySelector(sel);
+      const bodyEl = document.body;
       const peopleEl = $('#people');
       const meetingNameEl = $('#meetingName');
       const meetingDateEl = $('#meetingDate');
@@ -254,6 +268,9 @@ John Smith Marketing"></textarea>
       const openBlankEl = $('#openBlank');
       const copyBlankEl = $('#copyBlank');
       const emailBlankEl = $('#emailBlank');
+      const enableEditingEl = $('#enableEditing');
+
+      bodyEl.dataset.mode = 'editor';
 
       function searchUrls(q) {
         const label = q.trim();
@@ -371,6 +388,7 @@ John Smith Marketing"></textarea>
         } else {
           url.searchParams.delete('date');
         }
+        url.searchParams.delete('edit');
         shareEl.value = url.toString();
         window.history.replaceState(null, '', url);
         updateMeetingHeading();
@@ -434,6 +452,17 @@ John Smith Marketing"></textarea>
         const dateParam = url.searchParams.get('date');
         if (dateParam) {
           meetingDateEl.value = dateParam;
+        }
+        const isViewer = !!listParam && !url.searchParams.has('edit');
+        bodyEl.dataset.mode = isViewer ? 'viewer' : 'editor';
+        peopleEl.readOnly = isViewer;
+        meetingNameEl.readOnly = isViewer;
+        meetingDateEl.disabled = isViewer;
+        if (openBlankEl) {
+          openBlankEl.disabled = isViewer;
+        }
+        if (copyBlankEl) {
+          copyBlankEl.disabled = isViewer;
         }
         setShareUrl();
       }
@@ -511,6 +540,14 @@ John Smith Marketing"></textarea>
             document.execCommand('copy');
             document.body.removeChild(temp);
           }
+        });
+      }
+
+      if (enableEditingEl) {
+        enableEditingEl.addEventListener('click', () => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('edit', '1');
+          window.location.href = url.toString();
         });
       }
 
