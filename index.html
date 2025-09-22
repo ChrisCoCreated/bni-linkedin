@@ -40,6 +40,37 @@
     body[data-mode="viewer"] .viewer-controls { display: flex; }
     body[data-mode="editor"] .viewer-controls { display: none; }
 
+    .prospects { margin: 24px 0; }
+    .prospects .hint { margin-bottom: 12px; }
+    #joinProspects { min-height: 120px; margin-top: 12px; }
+    .join-prospects-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0;
+      display: grid;
+      gap: 8px;
+    }
+    .join-prospects-list li {
+      background: #f5f5f5;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+    .join-prospects-list a {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .join-prospects-list a .icon { margin-right: 0; }
+    .join-prospects-list a:hover,
+    .join-prospects-list a:focus { text-decoration: underline; }
+
+    body[data-mode="editor"] #joinProspectsViewer { display: none; }
+    body[data-mode="viewer"] #joinProspectsEditor { display: none; }
+
     .marketing { margin: 32px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
 
     .marketing-item {
@@ -199,6 +230,12 @@
       </table>
     </div>
 
+    <section id="joinProspectsViewer" class="prospects" hidden>
+      <h3>Find people to join us</h3>
+      <p class="hint">Open these LinkedIn searches to invite potential visitors from your first-degree network.</p>
+      <ul class="join-prospects-list" id="joinProspectsListViewer"></ul>
+    </section>
+
     <div class="row">
       <button id="copyShare">Copy link to share this list</button>
       <input id="shareUrl" type="text" readonly placeholder="Shareable URL will appear here" />
@@ -224,6 +261,15 @@
 Bob: Jane Doe, Example Ltd
 *Claire: Independent estate agent in the Canterbury
 John Smith Marketing"></textarea>
+
+      <section id="joinProspectsEditor" class="prospects">
+        <h3>Find people to join us</h3>
+        <p class="hint">List the professions or specialties you're hoping to invite so everyone can open LinkedIn searches for their first-degree connections.</p>
+        <textarea id="joinProspects" placeholder="Estate agent
+Family solicitor
+Mortgage broker"></textarea>
+        <ul class="join-prospects-list" id="joinProspectsListEditor"></ul>
+      </section>
     </div>
     <div class="row share-tools">
       <button id="openBlank" type="button">Open New</button>
@@ -286,6 +332,9 @@ John Smith Marketing"></textarea>
       const copyBlankEl = $('#copyBlank');
       const emailBlankEl = $('#emailBlank');
       const enableEditingEl = $('#enableEditing');
+      const joinProspectsEl = $('#joinProspects');
+      const joinProspectsViewerSectionEl = $('#joinProspectsViewer');
+      const joinProspectsLists = Array.from(document.querySelectorAll('.join-prospects-list'));
 
       bodyEl.dataset.mode = 'editor';
 
@@ -446,6 +495,61 @@ John Smith Marketing"></textarea>
         });
       }
 
+      function getJoinProspects() {
+        if (!joinProspectsEl) {
+          return [];
+        }
+        return joinProspectsEl.value
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+      }
+
+      function buildJoinProspectUrl(term) {
+        const params = new URLSearchParams({
+          keywords: term,
+          network: '["F"]',
+          geoUrn: '["104820895"]',
+        });
+        return `https://www.linkedin.com/search/results/people/?${params.toString()}`;
+      }
+
+      function renderJoinProspects(list) {
+        if (!joinProspectsLists.length) {
+          return;
+        }
+        joinProspectsLists.forEach((ul) => {
+          ul.innerHTML = '';
+        });
+        if (!list.length) {
+          if (joinProspectsViewerSectionEl) {
+            joinProspectsViewerSectionEl.hidden = true;
+          }
+          return;
+        }
+        list.forEach((term) => {
+          const url = buildJoinProspectUrl(term);
+          joinProspectsLists.forEach((ul) => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            const img = document.createElement('img');
+            img.src = 'https://cdn-icons-png.flaticon.com/512/174/174857.png';
+            img.alt = 'LinkedIn';
+            img.className = 'icon';
+            a.appendChild(img);
+            a.appendChild(document.createTextNode(term));
+            li.appendChild(a);
+            ul.appendChild(li);
+          });
+        });
+        if (joinProspectsViewerSectionEl) {
+          joinProspectsViewerSectionEl.hidden = false;
+        }
+      }
+
       function setShareUrl() {
         const raw = peopleEl.value.trim();
         const meetingName = meetingNameEl.value.trim();
@@ -465,6 +569,14 @@ John Smith Marketing"></textarea>
           url.searchParams.set('date', meetingDate);
         } else {
           url.searchParams.delete('date');
+        }
+        if (joinProspectsEl) {
+          const joinRaw = joinProspectsEl.value.trim();
+          if (joinRaw) {
+            url.searchParams.set('join', joinRaw.replace(/\r?\n/g, '\n'));
+          } else {
+            url.searchParams.delete('join');
+          }
         }
         url.searchParams.delete('edit');
         shareEl.value = url.toString();
@@ -523,6 +635,10 @@ John Smith Marketing"></textarea>
           peopleEl.value = listParam;
           render(getLines());
         }
+        const joinParam = url.searchParams.get('join');
+        if (joinParam && joinProspectsEl) {
+          joinProspectsEl.value = joinParam;
+        }
         const meetingParam = url.searchParams.get('meeting');
         if (meetingParam) {
           meetingNameEl.value = meetingParam;
@@ -531,11 +647,16 @@ John Smith Marketing"></textarea>
         if (dateParam) {
           meetingDateEl.value = dateParam;
         }
-        const isViewer = !!listParam && !url.searchParams.has('edit');
+        const hasList = !!(listParam && listParam.trim());
+        const hasJoin = !!(joinParam && joinParam.trim());
+        const isViewer = (hasList || hasJoin) && !url.searchParams.has('edit');
         bodyEl.dataset.mode = isViewer ? 'viewer' : 'editor';
         peopleEl.readOnly = isViewer;
         meetingNameEl.readOnly = isViewer;
         meetingDateEl.disabled = isViewer;
+        if (joinProspectsEl) {
+          joinProspectsEl.readOnly = isViewer;
+        }
         setShareUrl();
       }
 
@@ -630,20 +751,27 @@ John Smith Marketing"></textarea>
         });
       }
 
-      let t;
-      peopleEl.addEventListener('input', () => {
-        clearTimeout(t);
-        t = setTimeout(() => {
+      let updateTimer;
+      function scheduleUpdates() {
+        clearTimeout(updateTimer);
+        updateTimer = setTimeout(() => {
           render(getLines());
+          renderJoinProspects(getJoinProspects());
           setShareUrl();
         }, 250);
-      });
+      }
+
+      peopleEl.addEventListener('input', scheduleUpdates);
+      if (joinProspectsEl) {
+        joinProspectsEl.addEventListener('input', scheduleUpdates);
+      }
 
       meetingNameEl.addEventListener('input', setShareUrl);
       meetingDateEl.addEventListener('input', setShareUrl);
 
       loadFromUrl();
       render(getLines());
+      renderJoinProspects(getJoinProspects());
     })();
   </script>
 </body>
